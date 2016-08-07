@@ -20,7 +20,7 @@ For starting and accessing Kafka from various clients:
 ```bash
 docker run -p 2181:2181 -p 9092:9092 --env \
 ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` \
---env ADVERTISED_PORT=9092 spotify/kafka
+--env ADVERTISED_PORT=9092 dj/kafka
 ```
 
 Running the below Producer/Consumer test requires that you start Kafka using (note that this container will self remove after you exit.  If you want it to stick around, remove --rm flag):
