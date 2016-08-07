@@ -28,7 +28,7 @@ Running the below Producer/Consumer test requires that you start Kafka using (no
 ```bash
 docker run --rm --hostname `docker-machine ip \`docker-machine active\`` \
 -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` \
---env ADVERTISED_PORT=9092 spotify/kafka
+--env ADVERTISED_PORT=9092 dj/kafka
 ```
 
 The scripts we're executing are embeded in the kafka image so this will ensure that the kafka ports are mapped properly to the docker-machine ip.  
@@ -43,27 +43,27 @@ export KAFKA=`docker-machine ip \`docker-machine active\``:9092
 Create a topic:
 
 ```bash
-docker run --rm spotify/kafka \
+docker run --rm dj/kafka \
 kafka-topics.sh --create --zookeeper $ZOOKEEPER --replication-factor 1 --partitions 1 --topic test
 ```
 If you want to confirm creation of topic:
 
 ```bash
-docker run --rm spotify/kafka \
+docker run --rm dj/kafka \
 kafka-topics.sh --list --zookeeper $ZOOKEEPER
 ```
 
 Start a producer:
 
 ```bash
-docker run --rm --interactive spotify/kafka \
+docker run --rm --interactive dj/kafka \
 kafka-console-producer.sh --topic test --broker-list $KAFKA
 ```
 
 In a separate window, start a consumer:
 
 ```bash
-docker run --rm spotify/kafka \
+docker run --rm dj/kafka \
 kafka-console-consumer.sh --topic test --from-beginning --zookeeper $ZOOKEEPER
 ```
 
@@ -71,25 +71,15 @@ Type values into producer window and hit enter.  In the consumer window, observe
 
 In the box
 ---
-* **spotify/kafka**
+* **dj/kafka**
 
   The docker image with both Kafka and Zookeeper. Built from the `kafka`
   directory.
-
-* **spotify/kafkaproxy**
-
-  The docker image with Kafka, Zookeeper and a Kafka 7 proxy that can be
-  configured with a set of topics to mirror.
-
-Public Builds
----
-
-https://registry.hub.docker.com/u/spotify/kafka/
 
 
 Build from Source
 ---
 
-    docker build -t spotify/kafka kafka/
+    docker build -t dj/kafka kafka/
 
 
