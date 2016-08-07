@@ -18,13 +18,17 @@ Run
 For starting and accessing Kafka from various clients:
 
 ```bash
-docker run -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` --env ADVERTISED_PORT=9092 spotify/kafka
+docker run -p 2181:2181 -p 9092:9092 --env \
+ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` \
+--env ADVERTISED_PORT=9092 spotify/kafka
 ```
 
 Running the below Producer/Consumer test requires that you start Kafka using (note that this container will self remove after you exit.  If you want it to stick around, remove --rm flag):
 
 ```bash
-docker run --rm --hostname `docker-machine ip \`docker-machine active\`` -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` --env ADVERTISED_PORT=9092 spotify/kafka
+docker run --rm --hostname `docker-machine ip \`docker-machine active\`` \
+-p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` \
+--env ADVERTISED_PORT=9092 spotify/kafka
 ```
 
 The scripts we're executing are embeded in the kafka image so this will ensure that the kafka ports are mapped properly to the docker-machine ip.  
