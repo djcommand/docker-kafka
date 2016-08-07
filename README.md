@@ -1,10 +1,8 @@
 Kafka in Docker
 ===
 
-This repository provides everything you need to run Kafka in Docker.
+This repository provides everything you need to run Kafka 10 in Docker.
 
-For convenience also contains a packaged proxy that can be used to get data from
-a legacy Kafka 7 cluster into a dockerized Kafka 8.
 
 Why?
 ---
@@ -17,40 +15,59 @@ in the same container. This means:
 
 Run
 ---
+For starting and accessing Kafka from various clients:
 
 ```bash
-docker run -p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` --env ADVERTISED_PORT=9092 spotify/kafka
+docker run -p 2181:2181 -p 9092:9092 --env \
+ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` \
+--env ADVERTISED_PORT=9092 spotify/kafka
 ```
 
+Running the below Producer/Consumer test requires that you start Kafka using (note that this container will self remove after you exit.  If you want it to stick around, remove --rm flag):
+
 ```bash
-export KAFKA=`docker-machine ip \`docker-machine active\``:9092
-kafka-console-producer.sh --broker-list $KAFKA --topic test
+docker run --rm --hostname `docker-machine ip \`docker-machine active\`` \
+-p 2181:2181 -p 9092:9092 --env ADVERTISED_HOST=`docker-machine ip \`docker-machine active\`` \
+--env ADVERTISED_PORT=9092 spotify/kafka
 ```
+
+The scripts we're executing are embeded in the kafka image so this will ensure that the kafka ports are mapped properly to the docker-machine ip.  
+
+To avoid having to type your container ip over and over again:
 
 ```bash
 export ZOOKEEPER=`docker-machine ip \`docker-machine active\``:2181
-kafka-console-consumer.sh --zookeeper $ZOOKEEPER --topic test
+export KAFKA=`docker-machine ip \`docker-machine active\``:9092
 ```
 
-Running the proxy
------------------
-
-Take the same parameters as the spotify/kafka image with some new ones:
- * `CONSUMER_THREADS` - the number of threads to consume the source kafka 7 with
- * `TOPICS` - whitelist of topics to mirror
- * `ZK_CONNECT` - the zookeeper connect string of the source kafka 7
- * `GROUP_ID` - the group.id to use when consuming from kafka 7
+Create a topic:
 
 ```bash
-docker run -p 2181:2181 -p 9092:9092 \
-    --env ADVERTISED_HOST=`boot2docker ip` \
-    --env ADVERTISED_PORT=9092 \
-    --env CONSUMER_THREADS=1 \
-    --env TOPICS=my-topic,some-other-topic \
-    --env ZK_CONNECT=kafka7zookeeper:2181/root/path \
-    --env GROUP_ID=mymirror \
-    spotify/kafkaproxy
+docker run --rm spotify/kafka \
+kafka-topics.sh --create --zookeeper $ZOOKEEPER --replication-factor 1 --partitions 1 --topic test
 ```
+If you want to confirm creation of topic:
+
+```bash
+docker run --rm spotify/kafka \
+kafka-topics.sh --list --zookeeper $ZOOKEEPER
+```
+
+Start a producer:
+
+```bash
+docker run --rm --interactive spotify/kafka \
+kafka-console-producer.sh --topic test --broker-list $KAFKA
+```
+
+In a separate window, start a consumer:
+
+```bash
+docker run --rm spotify/kafka \
+kafka-console-consumer.sh --topic test --from-beginning --zookeeper $ZOOKEEPER
+```
+
+Type values into producer window and hit enter.  In the consumer window, observe values arriving in order.
 
 In the box
 ---
@@ -69,17 +86,10 @@ Public Builds
 
 https://registry.hub.docker.com/u/spotify/kafka/
 
-https://registry.hub.docker.com/u/spotify/kafkaproxy/
 
 Build from Source
 ---
 
     docker build -t spotify/kafka kafka/
-    docker build -t spotify/kafkaproxy kafkaproxy/
 
-Todo
----
-
-* Not particularily optimzed for startup time.
-* Better docs
 
