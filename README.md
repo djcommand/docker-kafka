@@ -13,6 +13,20 @@ in the same container. This means:
 * No dependency on an external Zookeeper host, or linking to another container
 * Zookeeper and Kafka are configured to work together out of the box
 
+In the box
+---
+* **dj/kafka**
+
+  The docker image with both Kafka and Zookeeper. Built from the `kafka`
+  directory.
+
+
+Build from Source
+---
+
+    docker build -t dj/kafka kafka/
+
+
 Run
 ---
 For starting and accessing Kafka from various clients:
@@ -68,18 +82,5 @@ kafka-console-consumer.sh --topic test --from-beginning --zookeeper $ZOOKEEPER
 ```
 
 Type values into producer window and hit enter.  In the consumer window, observe values arriving in order.
-
-In the box
----
-* **dj/kafka**
-
-  The docker image with both Kafka and Zookeeper. Built from the `kafka`
-  directory.
-
-
-Build from Source
----
-
-    docker build -t dj/kafka kafka/
 
 
